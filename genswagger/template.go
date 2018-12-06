@@ -508,9 +508,9 @@ func renderServices(pkg string, services []*descriptor.Service, paths swaggerPat
 		for methIdx, meth := range svc.Methods {
 			var path string
 			if pkg == "" {
-				path = fmt.Sprintf("/twirp/%s/%s", *svc.Name, *meth.Name)
+				path = fmt.Sprintf("/gcrpc/%s/%s", *svc.Name, *meth.Name)
 			} else {
-				path = fmt.Sprintf("/twirp/%s.%s/%s", pkg, *svc.Name, *meth.Name)
+				path = fmt.Sprintf("/gcrpc/%s.%s/%s", pkg, *svc.Name, *meth.Name)
 			}
 
 			parameters := swaggerParametersObject{}
