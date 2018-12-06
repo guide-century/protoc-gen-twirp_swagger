@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	swagger_options "github.com/elliots/protoc-gen-twirp_swagger/options"
+	swagger_options "github.com/guide-century/protoc-gen-twirp_swagger/options"
 	"github.com/golang/protobuf/proto"
 	pbdescriptor "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/descriptor"
