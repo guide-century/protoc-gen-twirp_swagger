@@ -11,10 +11,10 @@ import (
 	"strings"
 	"sync"
 
-	swagger_options "github.com/guide-century/protoc-gen-twirp_swagger/options"
 	"github.com/golang/protobuf/proto"
 	pbdescriptor "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/descriptor"
+	swagger_options "github.com/guide-century/protoc-gen-twirp_swagger/options"
 )
 
 var wktSchemas = map[string]schemaCore{
@@ -502,9 +502,15 @@ func templateToSwaggerPath(path string) string {
 	return strings.Join(parts, "/")
 }
 
-func renderServices(pkg string, services []*descriptor.Service, paths swaggerPathsObject, reg *descriptor.Registry, refs refMap) error {
+func renderServices(pkg string, services []*descriptor.Service, paths swaggerPathsObject, tags *[]swaggerTagItemObject, reg *descriptor.Registry, refs refMap) error {
 	// Correctness of svcIdx and methIdx depends on 'services' containing the services in the same order as the 'file.Service' array.
 	for svcIdx, svc := range services {
+		srvComments := protoComments(reg, svc.File, nil, "Service", int32(svcIdx))
+		*tags = append(*tags, swaggerTagItemObject{Name: svc.GetName(), Description: srvComments})
+		//ExternalDocs: &ExternalDocs{Description: "文档主页", URL: "https://dt.tourismcreater.com/openapi"}
+
+		//q.Q(tags)
+
 		for methIdx, meth := range svc.Methods {
 			var path string
 			if pkg == "" {
@@ -600,13 +606,13 @@ func renderServices(pkg string, services []*descriptor.Service, paths swaggerPat
 
 				// TODO(ivucica): add remaining fields of operation object
 			}
-
+			//q.Q(operationObject.Tags)
 			pathItemObject.Post = operationObject
 			paths[path] = pathItemObject
 		}
 		//}
 	}
-
+	//q.Q(tags)
 	// Success! return nil on the error object
 	return nil
 }
@@ -622,6 +628,7 @@ func applyTemplate(p param) (string, error) {
 		Consumes:    []string{"application/json"},
 		Produces:    []string{"application/json"},
 		Paths:       make(swaggerPathsObject),
+		Tags:        []swaggerTagItemObject{},
 		Definitions: make(swaggerDefinitionsObject),
 		Info: swaggerInfoObject{
 			Title:   *p.File.Name,
@@ -632,7 +639,7 @@ func applyTemplate(p param) (string, error) {
 	// Loops through all the services and their exposed GET/POST/PUT/DELETE definitions
 	// and create entries for all of them.
 	refs := refMap{}
-	if err := renderServices(p.GetPackage(), p.Services, s.Paths, p.reg, refs); err != nil {
+	if err := renderServices(p.GetPackage(), p.Services, s.Paths, &s.Tags, p.reg, refs); err != nil {
 		panic(err)
 	}
 

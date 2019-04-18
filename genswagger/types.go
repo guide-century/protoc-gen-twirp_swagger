@@ -3,7 +3,6 @@ package genswagger
 import (
 	"bytes"
 	"encoding/json"
-
 	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/descriptor"
 )
 
@@ -58,6 +57,23 @@ type swaggerObject struct {
 	Paths        swaggerPathsObject                  `json:"paths"`
 	Definitions  swaggerDefinitionsObject            `json:"definitions"`
 	ExternalDocs *swaggerExternalDocumentationObject `json:"externalDocs,omitempty"`
+	Tags         []swaggerTagItemObject              `json:"tags"`
+}
+
+//type swaggerTagsObject []swaggerTagItemObject
+
+// 来自 beego
+// Tag Allows adding meta data to a single tag that is used by the Operation Object
+type swaggerTagItemObject struct {
+	Name         string        `json:"name,omitempty" yaml:"name,omitempty"`
+	Description  string        `json:"description,omitempty" yaml:"description,omitempty"`
+	ExternalDocs *ExternalDocs `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
+}
+
+// ExternalDocs include Additional external documentation
+type ExternalDocs struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	URL         string `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
 // http://swagger.io/specification/#pathsObject
